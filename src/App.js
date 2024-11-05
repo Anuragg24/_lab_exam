@@ -1,25 +1,35 @@
-import logo from './logo.svg';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import Home from './pages/Home';
+import Login from './pages/Login';
+import Signup from './pages/Signup';
+import Header from './components/Header';
 import './App.css';
+function PrivateRoute({ isAuthenticated, children }) {
+    return isAuthenticated ? children : <Navigate to="/login" />;
+}
 
 function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+    const [isAuthenticated, setAuth] = React.useState(false);
+
+    return (
+        <Router>
+            <Header isAuthenticated={isAuthenticated} setAuth={setAuth} />
+            <Routes>
+                <Route
+                    path="/home"
+                    element={
+                        <PrivateRoute isAuthenticated={isAuthenticated}>
+                            <Home />
+                        </PrivateRoute>
+                    }
+                />
+                <Route path="/login" element={<Login setAuth={setAuth} />} />
+                <Route path="/signup" element={<Signup />} />
+                <Route path="/" element={<Navigate to="/login" />} />
+            </Routes>
+        </Router>
+    );
 }
 
 export default App;
